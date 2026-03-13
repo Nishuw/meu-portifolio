@@ -16,49 +16,15 @@
 html { scroll-behavior: smooth; }
 body { background: var(--bg); color: var(--dark); font-family: 'DM Sans', sans-serif; font-weight: 300; overflow-x: hidden; }
 
-/* ── ROBOT: fixed full-screen background canvas ── */
-#robot-canvas {
+/* ── PARTICLE NETWORK: fixed background canvas ── */
+#bg-canvas {
   position: fixed;
   top: 0; left: 0;
   width: 100vw; height: 100vh;
   pointer-events: none;
-  z-index: 1;
+  z-index: 0;
 }
 
-/* ── SPEECH BUBBLE (DOM, animated) ── */
-#robot-bubble {
-  position: fixed;
-  z-index: 8;
-  pointer-events: none;
-  background: white;
-  border: 1.5px solid var(--border);
-  border-radius: 12px 12px 12px 3px;
-  padding: 0.45rem 0.85rem;
-  font-size: 0.66rem;
-  font-family: 'DM Sans', monospace;
-  color: var(--dark);
-  white-space: nowrap;
-  box-shadow: 0 4px 18px rgba(26,33,24,0.09);
-  opacity: 0;
-  transform: translateY(6px) scale(0.95);
-  transition: opacity 0.22s ease, transform 0.22s ease;
-  max-width: 260px;
-}
-#robot-bubble.show {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-}
-/* tail */
-#robot-bubble::after {
-  content: '';
-  position: absolute;
-  bottom: -7px; left: 16px;
-  border: 5px solid transparent;
-  border-top-color: white;
-  filter: drop-shadow(0 2px 1px rgba(26,33,24,0.08));
-}
-
-/* ── ALL PAGE CONTENT sits above robot ── */
 nav, section, footer, .marquee-wrap, #contact { position: relative; z-index: 2; }
 
 /* ── NAV ── */
@@ -224,9 +190,8 @@ footer span { font-size:0.7rem; color:var(--muted); }
 </head>
 <body>
 
-<!-- ══ BACKGROUND ROBOT CANVAS ══ -->
-<canvas id="robot-canvas"></canvas>
-<div id="robot-bubble"></div>
+<!-- ══ PARTICLE NETWORK BACKGROUND ══ -->
+<canvas id="bg-canvas"></canvas>
 
 <!-- ══ NAV ══ -->
 <nav>
@@ -459,417 +424,109 @@ document.querySelectorAll('.reveal').forEach(el => {
 });
 
 /* ═══════════════════════════════════════════
-   ROBOT ENGINE
-   - Canvas covers full viewport (fixed)
-   - Robot wanders the full screen freely
-   - Randomly pauses, waves, dances, thinks
-   - Speech bubble follows robot with
-     automation-themed messages
+   PARTICLE NETWORK
+   Floating dots that drift and connect when
+   near each other — subtle, techy background
 ═══════════════════════════════════════════ */
-const canvas = document.getElementById('robot-canvas');
+const canvas = document.getElementById('bg-canvas');
 const ctx    = canvas.getContext('2d');
-const bubble = document.getElementById('robot-bubble');
 
-// ── resize canvas ──
-function resizeCanvas() {
-  canvas.width  = window.innerWidth;
-  canvas.height = window.innerHeight;
+const PARTICLE_COUNT = 55;
+const CONNECT_DIST   = 140;
+const MOUSE_DIST     = 180;
+const BASE_SPEED     = 0.3;
+
+let W, H;
+let mouseX = -999, mouseY = -999;
+
+function resize() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
 }
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
+resize();
+window.addEventListener('resize', resize);
+document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+document.addEventListener('mouseleave', () => { mouseX = -999; mouseY = -999; });
 
-// ── ROBOT STATE ──
-// ry is in DOCUMENT coordinates (scrolls with page)
-let rx = -40, ry = window.innerHeight - 80;
-let dir     = 1;       // 1=right, -1=left
-let speed   = 1.5;
+const particles = Array.from({ length: PARTICLE_COUNT }, () => ({
+  x:  Math.random() * window.innerWidth,
+  y:  Math.random() * window.innerHeight,
+  vx: (Math.random() - 0.5) * BASE_SPEED * 2,
+  vy: (Math.random() - 0.5) * BASE_SPEED * 2,
+  r:  1.2 + Math.random() * 1.8,
+  o:  0.12 + Math.random() * 0.18,
+}));
 
-// target position (horizontal only)
-let tx = Math.random() * window.innerWidth;
+function loop() {
+  ctx.clearRect(0, 0, W, H);
 
-// animations
-let legPhase  = 0;
-let eyeBlink  = false;
-let blinkT    = 80;
-let antennaOn = true;
-let antennaT  = 30;
+  for (const p of particles) {
+    p.x += p.vx;
+    p.y += p.vy;
+    if (p.x < 0 || p.x > W) p.vx *= -1;
+    if (p.y < 0 || p.y > H) p.vy *= -1;
+    p.x = Math.max(0, Math.min(W, p.x));
+    p.y = Math.max(0, Math.min(H, p.y));
 
-// ── ACTIONS ──
-// walk=moving to target | pause | wave | think | dance | run
-let action  = 'walk';
-let actionT = 200;
-let timeOnPage = 0;
+    // gentle nudge away from cursor
+    const mdx = p.x - mouseX, mdy = p.y - mouseY;
+    const mDist = Math.sqrt(mdx * mdx + mdy * mdy);
+    if (mDist < MOUSE_DIST && mDist > 0) {
+      const force = (1 - mDist / MOUSE_DIST) * 0.6;
+      p.vx += (mdx / mDist) * force;
+      p.vy += (mdy / mDist) * force;
+    }
 
-// ── PHRASES ── (cycling, grouped by mood)
-const phraseSets = {
-  boot: [
-    '🤖 Iniciando sistema...',
-    '✅ Todos os módulos carregados',
-    '🔌 Conectando ao servidor...',
-  ],
-  work: [
-    '⚙️  bot.run()  →  OK',
-    '🔍 Coletando dados da página...',
-    '📊 Gerando relatório...',
-    '🗄️  db.insert(347 rows)',
-    '📡 GET /api/data  →  200',
-    '🔄 Iteração 1.847 completa',
-    '📋 Fazendo parse do HTML...',
-    '🧹 Limpando dados duplicados...',
-    '⏱️  Economizei 4h hoje',
-    '✅ Pipeline executado com sucesso',
-    '🔐 Token renovado automaticamente',
-    '📬 Relatório enviado por email',
-    '🚀 Deploy no ar!',
-    '💾 Backup concluído',
-    '🌐 Selenium abriu o browser',
-    '📥 408 registros importados',
-    '🔁 Agendando próxima execução...',
-    '🐍 import selenium  →  done',
-    '📦 Docker container up',
-    '🛡️  Nenhum erro encontrado!',
-  ],
-  think: [
-    '🤔 Otimizando o XPath...',
-    '💭 Preciso de mais memória RAM...',
-    '🧠 Analisando o log...',
-    '🔎 Inspecionando o DOM...',
-    '📐 Calculando timeout ideal...',
-  ],
-  fun: [
-    '🎉 Bug? Que bug?',
-    '☕ Compilando... só um café.',
-    '🎵 while True: work()',
-    '💡 Ideia: automatizar o café',
-    '😎 Código limpo = código feliz',
-    '🦾 Robôs não dormem.',
-    '⚡ Latência: 3ms. Satisfeito.',
-  ],
-};
-
-let allPhrases = [...phraseSets.boot, ...phraseSets.work, ...phraseSets.think, ...phraseSets.fun];
-let phraseIdx  = 0;
-let bubbleShowing = false;
-let bubbleCooldown = 0;
-
-function shuffled(arr) {
-  return [...arr].sort(() => Math.random() - 0.5);
-}
-allPhrases = [...phraseSets.boot, ...shuffled([...phraseSets.work, ...phraseSets.think, ...phraseSets.fun])];
-
-// ── SHOW BUBBLE ──
-function showBubble(text, duration = 3000) {
-  if (bubbleShowing) return;
-  bubbleShowing = true;
-
-  const screenY = ry - window.scrollY;
-  const bx = Math.max(8, Math.min(rx - 16, window.innerWidth - 280));
-  const by = Math.max(8, screenY - 120);
-
-  bubble.textContent = text;
-  bubble.style.left  = bx + 'px';
-  bubble.style.top   = by + 'px';
-  bubble.classList.add('show');
-
-  clearTimeout(bubble._hide);
-  bubble._hide = setTimeout(() => {
-    bubble.classList.remove('show');
-    setTimeout(() => { bubbleShowing = false; }, 250);
-  }, duration);
-}
-
-function triggerPhrase() {
-  if (bubbleCooldown > 0) return;
-  const text = allPhrases[phraseIdx % allPhrases.length];
-  phraseIdx++;
-  showBubble(text, phraseIdx <= 3 ? 2400 : 3200);
-  bubbleCooldown = 180 + Math.random() * 120;
-}
-
-// ── NEW WANDER TARGET (horizontal only) ──
-function newTarget() {
-  const pad = 60;
-  tx = pad + Math.random() * (window.innerWidth - pad * 2);
-}
-
-// ── PICK ACTION ──
-function pickAction() {
-  const pool = ['walk','walk','walk','walk','pause','wave'];
-  if (timeOnPage > 10) pool.push('think');
-  if (timeOnPage > 25) pool.push('dance', 'think');
-  if (timeOnPage > 60) pool.push('run',   'dance');
-
-  action  = pool[Math.floor(Math.random() * pool.length)];
-
-  actionT = action === 'walk'  ? 220 + Math.random() * 180
-          : action === 'run'   ? 100 + Math.random() * 80
-          : action === 'pause' ? 70  + Math.random() * 90
-          : action === 'dance' ? 90  + Math.random() * 70
-          : action === 'wave'  ? 65  + Math.random() * 45
-          :                      80  + Math.random() * 60; // think
-
-  if (action === 'walk' || action === 'run') newTarget();
-  if (Math.random() < 0.55) triggerPhrase();
-}
-
-// ── DRAW ONE ROBOT ──
-// (rx, ry) = foot center. dir = facing direction.
-function drawRobot(x, y, facing, phase, act, blink, antOn) {
-  ctx.save();
-  ctx.globalAlpha = 0.78; // subtle — it's background
-
-  const f = facing; // 1=right, -1=left
-  const isRun    = act === 'run';
-  const isDance  = act === 'dance';
-  const isThink  = act === 'think';
-  const isWave   = act === 'wave';
-  const isPause  = act === 'pause';
-
-  // animation deltas
-  const bob   = (act === 'walk' || isRun) ? Math.sin(phase * (isRun ? 3.5 : 2)) * 1.8 : 0;
-  const swing = isDance ? Math.sin(phase * 3) * 7 : 0;
-  const nod   = isThink ? Math.sin(phase * 1.8) * 3 : 0;
-  const baseY = y + bob + swing * 0.25;
-
-  // ── TRACK ──
-  const tw = 42, th = 13, tr = 7;
-  ctx.beginPath();
-  ctx.roundRect(x - tw/2, baseY - th, tw, th, tr);
-  ctx.fillStyle = '#2c3e2a';
-  ctx.fill();
-
-  // wheels
-  const wheelXs = [x - 15, x, x + 15];
-  wheelXs.forEach(wx => {
-    ctx.beginPath();
-    ctx.arc(wx, baseY - 6, 5.5, 0, Math.PI * 2);
-    ctx.fillStyle = '#1a2118';
-    ctx.fill();
-    // spinning dot
-    const a = phase * f * (isRun ? 2.5 : 1.4);
-    ctx.beginPath();
-    ctx.arc(wx + Math.cos(a) * 2.5, baseY - 6 + Math.sin(a) * 2.5, 2, 0, Math.PI * 2);
-    ctx.fillStyle = '#4a7a48';
-    ctx.fill();
-  });
-
-  // ── BODY ──
-  const bodyTop = baseY - th - 28;
-  ctx.beginPath();
-  ctx.roundRect(x - 19, bodyTop, 38, 28, 6);
-  ctx.fillStyle = '#2a6644';
-  ctx.fill();
-  ctx.beginPath();
-  ctx.roundRect(x - 15, bodyTop + 3, 30, 22, 5);
-  ctx.fillStyle = '#1e5038';
-  ctx.fill();
-
-  // chest LED
-  const ledAlpha = antOn ? 0.95 : 0.35;
-  ctx.beginPath();
-  ctx.arc(x, bodyTop + 15, 4.5, 0, Math.PI * 2);
-  ctx.fillStyle = `rgba(143,184,122,${ledAlpha})`;
-  ctx.fill();
-  ctx.beginPath();
-  ctx.arc(x, bodyTop + 15, 2.8, 0, Math.PI * 2);
-  ctx.fillStyle = '#d4f5b0';
-  ctx.fill();
-
-  // body detail lines
-  ctx.strokeStyle = '#3d8f6a'; ctx.lineWidth = 1;
-  ctx.globalAlpha = 0.35;
-  for (const lx of [x - 9, x + 9]) {
-    ctx.beginPath(); ctx.moveTo(lx, bodyTop + 5); ctx.lineTo(lx, bodyTop + 24); ctx.stroke();
-  }
-  ctx.globalAlpha = 0.78;
-
-  // ── ARMS ──
-  const runSwing = isRun   ? Math.sin(phase * 3.5) * 0.6 : 0;
-  const walkSwing= act === 'walk' ? Math.sin(phase) * 0.2 : 0;
-  const danceArm = isDance ? Math.sin(phase * 3 + 1) * 0.4 : 0;
-  const waveRise = isWave  ? Math.max(0, Math.sin(phase * 4)) * 0.9 : 0;
-
-  // left arm
-  const laRot = (-0.28 + walkSwing + runSwing + danceArm) * Math.PI;
-  ctx.save();
-  ctx.translate(x - 20, bodyTop + 7);
-  ctx.rotate(laRot);
-  ctx.beginPath(); ctx.roundRect(-4, 0, 9, 19, 4); ctx.fillStyle = '#2a6644'; ctx.fill();
-  ctx.beginPath(); ctx.roundRect(-5, 16, 11, 7, 3); ctx.fillStyle = '#1e5038'; ctx.fill();
-  ctx.restore();
-
-  // right arm (this one waves)
-  const raRot = (0.28 - walkSwing - runSwing - danceArm - waveRise) * Math.PI;
-  ctx.save();
-  ctx.translate(x + 20, bodyTop + 7);
-  ctx.rotate(raRot);
-  ctx.beginPath(); ctx.roundRect(-4, 0, 9, 19, 4); ctx.fillStyle = '#2a6644'; ctx.fill();
-  ctx.beginPath(); ctx.roundRect(-5, 16, 11, 7, 3); ctx.fillStyle = '#1e5038'; ctx.fill();
-  ctx.restore();
-
-  // ── HEAD ──
-  const headX = x + (isThink ? f * 2 : 0);
-  const headTop = bodyTop - 30 + nod;
-  ctx.beginPath();
-  ctx.roundRect(headX - 17, headTop, 34, 30, 8);
-  ctx.fillStyle = '#2a6644';
-  ctx.fill();
-  ctx.beginPath();
-  ctx.roundRect(headX - 13, headTop + 3, 26, 24, 6);
-  ctx.fillStyle = '#1e5038';
-  ctx.fill();
-
-  // ── EYES ──
-  const ex = f * 2; // shift toward facing
-  const ey = headTop + 10;
-
-  for (const [ox, eyeDir] of [[-7, -1], [4, 1]]) {
-    ctx.beginPath();
-    ctx.roundRect(headX + ox + ex, ey, 10, 9, 3);
-    ctx.fillStyle = '#0d1a0c';
-    ctx.fill();
-    if (!blink) {
-      // iris
-      ctx.beginPath();
-      ctx.arc(headX + ox + ex + 5, ey + 4.5, 3.2, 0, Math.PI * 2);
-      ctx.fillStyle = '#8fb87a';
-      ctx.fill();
-      // pupil
-      ctx.beginPath();
-      ctx.arc(headX + ox + ex + 5.5, ey + 4, 1.5, 0, Math.PI * 2);
-      ctx.fillStyle = '#0a1a0a';
-      ctx.fill();
-      // gleam
-      ctx.globalAlpha = 0.85;
-      ctx.beginPath();
-      ctx.arc(headX + ox + ex + 6.5, ey + 3, 0.8, 0, Math.PI * 2);
-      ctx.fillStyle = 'white';
-      ctx.fill();
-      ctx.globalAlpha = 0.78;
-    } else {
-      // blink line
-      ctx.fillStyle = '#3d8f6a';
-      ctx.fillRect(headX + ox + ex + 1, ey + 3.5, 8, 2);
+    // clamp speed
+    const sp = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+    if (sp > BASE_SPEED * 3) {
+      p.vx *= 0.98;
+      p.vy *= 0.98;
     }
   }
 
-  // ── THINK DOTS ──
-  if (isThink) {
-    ctx.globalAlpha = 0.55;
-    for (let i = 0; i < 3; i++) {
+  // draw connections
+  for (let i = 0; i < particles.length; i++) {
+    const a = particles[i];
+    for (let j = i + 1; j < particles.length; j++) {
+      const b = particles[j];
+      const dx = a.x - b.x, dy = a.y - b.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < CONNECT_DIST) {
+        const alpha = (1 - dist / CONNECT_DIST) * 0.12;
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.strokeStyle = `rgba(42,102,68,${alpha})`;
+        ctx.lineWidth = 0.6;
+        ctx.stroke();
+      }
+    }
+
+    // mouse connections
+    const mdx = a.x - mouseX, mdy = a.y - mouseY;
+    const mDist = Math.sqrt(mdx * mdx + mdy * mdy);
+    if (mDist < MOUSE_DIST) {
+      const alpha = (1 - mDist / MOUSE_DIST) * 0.2;
       ctx.beginPath();
-      ctx.arc(headX + f * 18 + f * i * 7, headTop - 3 - i * 5, 2.2 + i * 0.7, 0, Math.PI * 2);
-      ctx.fillStyle = '#2a6644';
-      ctx.fill();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(mouseX, mouseY);
+      ctx.strokeStyle = `rgba(143,184,122,${alpha})`;
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
     }
-    ctx.globalAlpha = 0.78;
   }
 
-  // ── ANTENNA ──
-  const antX = headX + f * 4;
-  ctx.strokeStyle = '#2a6644'; ctx.lineWidth = 2.5; ctx.lineCap = 'round';
-  ctx.beginPath();
-  ctx.moveTo(headX, headTop);
-  ctx.lineTo(antX, headTop - 11);
-  ctx.stroke();
-  // tip
-  ctx.beginPath();
-  ctx.arc(antX, headTop - 13, 3.8, 0, Math.PI * 2);
-  ctx.fillStyle = antOn ? '#8fb87a' : '#1e5038';
-  ctx.fill();
-  if (antOn) {
-    ctx.globalAlpha = 0.22;
+  // draw particles
+  for (const p of particles) {
     ctx.beginPath();
-    ctx.arc(antX, headTop - 13, 7, 0, Math.PI * 2);
-    ctx.fillStyle = '#8fb87a';
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(42,102,68,${p.o})`;
     ctx.fill();
-    ctx.globalAlpha = 0.78;
-  }
-
-  ctx.restore();
-}
-
-// ── MAIN LOOP ──
-let lastTs = 0;
-function loop(ts) {
-  const dt = Math.min((ts - lastTs) / 16.67, 3);
-  lastTs = ts;
-
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // blink
-  blinkT -= dt;
-  if (blinkT <= 0) {
-    eyeBlink = true;
-    blinkT = 100 + Math.random() * 160;
-    setTimeout(() => { eyeBlink = false; }, 110);
-  }
-
-  // antenna pulse
-  antennaT -= dt;
-  if (antennaT <= 0) {
-    antennaOn = !antennaOn;
-    antennaT  = antennaOn ? 50 + Math.random() * 70 : 10 + Math.random() * 18;
-  }
-
-  // bubble cooldown
-  if (bubbleCooldown > 0) bubbleCooldown -= dt;
-
-  // action timer
-  actionT -= dt;
-  if (actionT <= 0) pickAction();
-
-  // ── MOVE (horizontal only, document coordinates) ──
-  const curSpeed = action === 'run' ? speed * 2.8 : speed;
-  const dist = Math.abs(tx - rx);
-
-  if (action === 'walk' || action === 'run') {
-    if (dist > 8) {
-      const step = (tx > rx ? 1 : -1) * curSpeed * dt;
-      rx += step;
-      dir = tx > rx ? 1 : -1;
-    } else {
-      newTarget();
-    }
-    legPhase += (action === 'run' ? 0.14 : 0.07) * dt;
-  } else if (action === 'dance') {
-    legPhase += 0.1 * dt;
-    rx += Math.sin(legPhase * 0.4) * 1.2 * dt;
-  } else {
-    legPhase += 0.035 * dt;
-  }
-
-  rx = Math.max(55, Math.min(window.innerWidth - 55, rx));
-
-  // convert document Y to viewport Y for drawing
-  const screenY = ry - window.scrollY;
-  const onScreen = screenY > -120 && screenY < window.innerHeight + 40;
-
-  if (onScreen) {
-    drawRobot(rx, screenY, dir, legPhase, action, eyeBlink, antennaOn);
-  }
-
-  // keep bubble anchored to robot (viewport coords)
-  if (bubbleShowing) {
-    bubble.style.left = Math.max(8, Math.min(rx - 16, window.innerWidth - 280)) + 'px';
-    bubble.style.top  = Math.max(8, screenY - 120) + 'px';
-    if (!onScreen) bubble.classList.remove('show');
   }
 
   requestAnimationFrame(loop);
 }
-
-// ── TIMED PHRASE TRIGGERS ──
-setInterval(() => {
-  timeOnPage++;
-  if (timeOnPage % 10 === 0) triggerPhrase();
-}, 1000);
-
-// ── BOOT SEQUENCE ──
-setTimeout(() => triggerPhrase(), 800);   // "Iniciando sistema..."
-setTimeout(() => triggerPhrase(), 3200);  // "Todos os módulos carregados"
-setTimeout(() => triggerPhrase(), 6000);  // "Conectando..."
-setTimeout(() => pickAction(),     1000);
 
 requestAnimationFrame(loop);
 </script>
