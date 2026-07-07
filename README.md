@@ -2,130 +2,63 @@
 
 # Ryan Nishikawa
 
-**Backend Developer · RPA & Automação de Processos**
+**AI Engineer · Full-Stack Developer · Automation Specialist**
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/ryan-nishikawa)
 [![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Nishuw)
 [![Email](https://img.shields.io/badge/Email-0078D4?style=for-the-badge&logo=microsoftoutlook&logoColor=white)](mailto:ryan.nishikawa@hotmail.com)
 
-*Processos que rodam sozinhos.*
+*Systems that read, reason and act.*
+
+**[www.nishikawa.app](https://www.nishikawa.app/)**
 
 </div>
 
 ---
 
-## Sobre
+## About
 
-Desenvolvedor Backend especializado em **RPA e automação de processos**. Transformo fluxos manuais e repetitivos em sistemas autônomos, confiáveis e escaláveis. Minha atuação vai desde infraestrutura de redes até RPAs complexos — essa visão ampla permite construir soluções mais robustas e integradas ao ambiente real da empresa.
+I build AI systems that read, reason and act — RAG pipelines, autonomous agents and automation that eliminates repetitive work end to end, in production. My path went from enterprise network infrastructure → backend & RPA engineering → AI engineering, which is why my systems are designed for failure modes, observability and scale from day one.
 
-<div align="center">
+## Milestones
 
-| 2+ anos | 6+ projetos | 12+ tecnologias | 98% taxa de sucesso |
-|:---:|:---:|:---:|:---:|
-| de experiência | entregues em produção | no stack técnico | nos RPAs |
+- 🏆 **RAISE Summit Hackathon 2026 (Paris)** — built [DocRAG BR](https://github.com/Nishuw/DocRAG-BR), a self-auditing RAG system for Brazilian financial documents: multi-format ingestion (text, tables, vector charts), two-stage retrieval and a verification layer that catches its own hallucinations.
+- 🏆 **Google Cloud / GKE Hackathon 2025** — built an [AI agent microservice](https://github.com/Nishuw/online-boutique-ai-agent) for Google's Online Boutique: Gemini-powered abandoned-cart recovery, FastAPI + Docker, GKE-ready.
 
-</div>
+## Stack
 
----
-
-## Stack Técnico
-
-<div align="center">
-
-| Categoria | Tecnologias |
+| Domain | Technologies |
 |---|---|
-| **Linguagem** | Python |
-| **RPA & Scraping** | Selenium · Web Scraping · OCR |
-| **Bancos de Dados** | PostgreSQL · MySQL |
-| **Infraestrutura** | Docker · Linux · Shell Script |
-| **Integrações** | APIs REST · n8n · SIP/PABX |
-| **Versionamento** | Git |
-
-</div>
+| **AI & LLMs** | RAG · AI Agents · Multi-Agent Systems · Prompt Engineering · LangChain · MCP · Vector DBs |
+| **Automation** | RPA · Web Scraping · OCR · n8n |
+| **Languages** | Python · TypeScript · JavaScript · SQL |
+| **Web & Backend** | React · Node.js · FastAPI · Flask · REST APIs |
+| **Data & Infra** | Docker · Kubernetes/GCP · PostgreSQL · MySQL · Linux · Git |
 
 ---
 
-## Experiência
+## About This Repository
 
-### Mix Fiscal — Analista de Sistema em RPA
-`fev 2026 → atual` · Presencial · Campinas
+Source of my personal portfolio — a single-page site in pure HTML/CSS/JS, zero external dependencies (only Google Fonts), deployed on Vercel.
 
-Desenvolvimento e orquestração de RPAs para automação de processos tributários. Manutenção de sistemas embarcados e online. Criação de scripts Python para classificação fiscal com alta confiabilidade e rastreabilidade de execução.
+**Implementation highlights:**
 
-`Python` `RPA` `PostgreSQL` `API REST` `Scrum`
-
----
-
-### Global Hitss — Analista de Desenvolvimento
-`abr 2025 → fev 2026` · Híbrido · Campinas
-
-Analisador de logs para Cisco e Nokia em Python. 4 ferramentas de automação para banco de dados e relatórios. Chatbot técnico no Telegram via n8n. Portal web interno para consulta de PDF, DOC, CSV e JSON.
-
-`Python` `n8n` `Cisco` `Nokia` `Chatbot` `Automação`
-
----
-
-### Global Hitss — Técnico de Redes
-`ago 2024 → jul 2025` · Presencial · Campinas
-
-Suporte técnico em redes corporativas, resolução de incidentes e engenharia de rede. Base em infraestrutura que complementa diretamente o desenvolvimento de automações mais precisas.
-
-`Redes` `Linux` `Infraestrutura`
-
----
-
-## Projetos em Destaque
-
-### 01 · Orquestração de RPAs Tributários
-> Sistema completo de criação e orquestração de bots RPA para classificação fiscal. Alta confiabilidade, logs rastreáveis e relatórios automáticos.
-
-```
-🌐 Acessa portal fiscal  →  📋 Extrai dados da nota  →  ⚙️ Classifica automaticamente  →  🗄️ Persiste no banco
-```
-
-`Python` `Selenium` `PostgreSQL` `RPA`
-
-### 02 · Analisador de Logs Cisco/Nokia
-> Sistema Python para análise inteligente de logs de equipamentos de rede — interpreta interfaces, QoS, rotas e protocolos automaticamente.
-
-`Python` `Cisco` `Nokia` `Parsing`
-
-### 03 · Suite de Automação — 4 Ferramentas
-> Conjunto de ferramentas Python para manipulação de banco de dados, organização de arquivos e geração automatizada de relatórios operacionais.
-
-`Python` `MySQL` `Reports`
-
-### 04 · Chatbot de Redes — Telegram
-> Bot integrado ao Telegram via n8n com base de conhecimento técnico sobre Cisco, FortiGate e Huawei para suporte em campo.
-
-`n8n` `Telegram` `Chatbot`
-
-### 05 · Portal Web — Knowledge Base
-> Portal interno para ingestão e consulta de arquivos PDF, DOC, CSV e JSON organizados por área de conhecimento, com interface responsiva.
-
-`Python` `OCR` `Web`
-
----
-
-## Sobre Este Repositório
-
-Este é o código-fonte do meu portfólio pessoal — um site single-page responsivo construído com HTML, CSS e JavaScript puro, sem dependências externas.
-
-**Destaques da implementação:**
-
-- Design minimalista com paleta de cores verde/off-white
-- Animações de scroll reveal com Intersection Observer
-- Robô SVG interativo estilo WALL-E que percorre a tela coletando itens
-- Marquee animado com stack técnico
-- Totalmente responsivo (mobile-first)
-- Zero dependências — apenas Google Fonts (DM Serif Display + DM Sans)
+- Bilingual PT-BR (default) / EN with a persistent toggle — full `data-i18n` dictionary, `localStorage`-backed, updates `<title>`, meta description and `<html lang>`
+- Enterprise-grade dark palette — deep graphite/blue base with muted indigo, soft blue and cyan accents; glassmorphism and subtle gradients
+- Canvas neural-network background — drifting nodes, proximity edges and signal pulses that flow between nodes (mouse-reactive, adaptive count, pauses when tab is hidden)
+- Layered depth — animated grid, parallax gradient orbs, vignette and cursor glow
+- Scroll-triggered reveals, animated counters and chart/pipeline visualizations via Intersection Observer
+- 3D tilt + spotlight hover on cards, magnetic buttons, SVG icon set (no emoji)
+- Live GitHub stats fetched client-side with static fallbacks
+- Typewriter role rotation and simulated AI-agent terminal in the hero
+- Fully responsive (mobile-first) and `prefers-reduced-motion` aware
 
 ---
 
 <div align="center">
 
-**Campinas, SP · Disponível para projetos remotos**
+**Campinas, BR · Open to remote opportunities**
 
-Tem um processo para automatizar? [Fala comigo.](mailto:ryan.nishikawa@hotmail.com)
+Have a process to automate or an AI system to build? [Talk to me.](mailto:ryan.nishikawa@hotmail.com)
 
 </div>

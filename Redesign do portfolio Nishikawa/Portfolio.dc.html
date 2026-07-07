@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:#1e1e1e}
+  ::selection{background:rgba(78,201,176,.3);color:#fff}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</helmet>
+
+<div style="height:100vh;width:100%;display:flex;flex-direction:column;background:#1e1e1e;font-family:'IBM Plex Sans',sans-serif;color:#d4d4d4;overflow:hidden">
+
+  <!-- ═══ TITLE BAR ═══ -->
+  <div style="height:34px;flex-shrink:0;display:flex;align-items:center;padding:0 14px;background:#181818;border-bottom:1px solid #2d2d2d;gap:10px">
+    <div style="display:flex;gap:7px">
+      <i style="width:11px;height:11px;border-radius:50%;background:#E05252;display:inline-block"></i>
+      <i style="width:11px;height:11px;border-radius:50%;background:#E0A93F;display:inline-block"></i>
+      <i style="width:11px;height:11px;border-radius:50%;background:#3FBF6B;display:inline-block"></i>
+    </div>
+    <div style="flex:1;text-align:center;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:#8a8a8a;letter-spacing:.3px">portfolio — nishikawa.dev</div>
+    <div style="width:60px"></div>
+  </div>
+
+  <!-- ═══ MAIN ROW ═══ -->
+  <div style="flex:1;display:flex;min-height:0">
+
+    <!-- ACTIVITY BAR -->
+    <div style="width:48px;flex-shrink:0;background:#181818;display:flex;flex-direction:column;align-items:center;padding-top:12px;gap:4px;border-right:1px solid #2d2d2d">
+      <div onClick="{{ toggleSidebar }}" title="Explorer" style="width:48px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-left:2px solid {{ sidebarOpen_ }};color:{{ sidebarIconColor }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h6l2 3h8v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/></svg>
+      </div>
+      <div title="Search" style="width:48px;height:40px;display:flex;align-items:center;justify-content:center;color:#5a5a5a;border-left:2px solid transparent">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      </div>
+      <div title="Extensões" style="width:48px;height:40px;display:flex;align-items:center;justify-content:center;color:#5a5a5a;border-left:2px solid transparent">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2v6M12 16v6M2 12h6M16 12h6"/><rect x="8" y="8" width="8" height="8" rx="1"/></svg>
+      </div>
+      <div title="Run" style="width:48px;height:40px;display:flex;align-items:center;justify-content:center;color:#5a5a5a;border-left:2px solid transparent">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 3v18l14-9z"/></svg>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <sc-if value="{{ sidebarOpen }}" hint-placeholder-val="{{ true }}">
+      <div style="width:230px;flex-shrink:0;background:#181818;border-right:1px solid #2d2d2d;overflow-y:auto;padding:14px 0">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1.5px;color:#8a8a8a;padding:0 16px 10px;font-weight:600">PORTFOLIO</div>
+
+        <sc-for list="{{ rootFiles }}" as="f" hint-placeholder-count="6">
+          <div onClick="{{ f.onClick }}" style="display:flex;flex-direction:column;gap:2px;padding:7px 16px;cursor:pointer;background:{{ f.bg }}">
+            <div style="display:flex;align-items:center;gap:9px">
+              <span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;color:{{ f.iconColor }};flex-shrink:0">{{ f.icon }}</span>
+              <span style="font-size:13px;color:{{ f.textColor }};font-weight:500">{{ f.label }}</span>
+            </div>
+            <span style="font-size:10.5px;color:#8a8a8a;padding-left:25px;line-height:1.3">{{ f.caption }}</span>
+          </div>
+        </sc-for>
+
+        <div onClick="{{ toggleFolder }}" style="display:flex;align-items:center;gap:6px;padding:5px 16px;cursor:pointer;margin-top:2px">
+          <span style="font-size:9px;color:#8a8a8a;display:inline-block;transform:{{ folderArrow }}">▶</span>
+          <span style="font-size:12.5px;color:#cccccc;font-weight:500">projetos</span>
+        </div>
+        <sc-if value="{{ folderExpanded }}" hint-placeholder-val="{{ true }}">
+          <sc-for list="{{ projectFiles }}" as="f" hint-placeholder-count="3">
+            <div onClick="{{ f.onClick }}" style="display:flex;flex-direction:column;gap:2px;padding:7px 16px 7px 34px;cursor:pointer;background:{{ f.bg }}">
+              <div style="display:flex;align-items:center;gap:9px">
+                <span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;color:{{ f.iconColor }};flex-shrink:0">{{ f.icon }}</span>
+                <span style="font-size:13px;color:{{ f.textColor }};font-weight:500">{{ f.label }}</span>
+              </div>
+              <span style="font-size:10.5px;color:#8a8a8a;padding-left:25px;line-height:1.3">{{ f.caption }}</span>
+            </div>
+          </sc-for>
+        </sc-if>
+
+        <sc-for list="{{ tailFiles }}" as="f" hint-placeholder-count="2">
+          <div onClick="{{ f.onClick }}" style="display:flex;flex-direction:column;gap:2px;padding:7px 16px;cursor:pointer;background:{{ f.bg }}">
+            <div style="display:flex;align-items:center;gap:9px">
+              <span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;color:{{ f.iconColor }};flex-shrink:0">{{ f.icon }}</span>
+              <span style="font-size:13px;color:{{ f.textColor }};font-weight:500">{{ f.label }}</span>
+            </div>
+            <span style="font-size:10.5px;color:#8a8a8a;padding-left:25px;line-height:1.3">{{ f.caption }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <!-- EDITOR + TERMINAL COLUMN -->
+    <div style="flex:1;display:flex;flex-direction:column;min-width:0;min-height:0">
+
+      <!-- TABS -->
+      <div style="height:36px;flex-shrink:0;display:flex;background:#181818;border-bottom:1px solid #2d2d2d;overflow-x:auto">
+        <sc-for list="{{ tabs }}" as="tb" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;gap:8px;padding:0 12px;height:100%;background:{{ tb.bg }};border-right:1px solid #2d2d2d;cursor:pointer;flex-shrink:0;border-top:2px solid {{ tb.topBorder }}">
+            <span onClick="{{ tb.onClick }}" style="display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;font-family:'JetBrains Mono',monospace;font-size:7px;font-weight:700;color:{{ tb.iconColor }}">{{ tb.icon }}</span>
+            <span onClick="{{ tb.onClick }}" style="font-size:12px;color:{{ tb.textColor }};white-space:nowrap">{{ tb.label }}</span>
+            <span onClick="{{ tb.onClose }}" style="color:#8a8a8a;font-size:14px;line-height:1;padding:2px" style-hover="color:#fff">×</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <!-- TRANSLATION BAR — plain-language explanation of the open file -->
+      <div style="display:flex;align-items:center;gap:10px;padding:11px 18px;background:#252526;border-bottom:1px solid #2d2d2d;flex-shrink:0">
+        <span style="font-size:15px;flex-shrink:0">💡</span>
+        <span style="font-family:'IBM Plex Sans',sans-serif;font-size:13.5px;color:#e8e8e8;line-height:1.5">{{ breadcrumbDesc }}</span>
+      </div>
+
+      <!-- FIRST-VISIT HINT -->
+      <sc-if value="{{ showHint }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:flex-start;gap:12px;margin:16px 16px 0;padding:14px 16px;background:rgba(78,201,176,.1);border:1px solid rgba(78,201,176,.35);border-radius:8px">
+          <span style="font-size:18px;flex-shrink:0">👋</span>
+          <div style="flex:1;font-family:'IBM Plex Sans',sans-serif;font-size:13px;color:#d4d4d4;line-height:1.6">{{ hintText }}</div>
+          <span onClick="{{ dismissHint }}" style="cursor:pointer;color:#8a8a8a;font-size:16px;line-height:1;padding:2px" style-hover="color:#fff">×</span>
+        </div>
+      </sc-if>
+
+      <!-- EDITOR CONTENT -->
+      <div style="flex:1;overflow-y:auto;background:#1e1e1e;padding:14px 0">
+        <sc-for list="{{ activeLines }}" as="ln" hint-placeholder-count="14">
+          <div style="display:flex;padding:0 16px;line-height:2.05">
+            <span style="width:34px;flex-shrink:0;text-align:right;padding-right:16px;color:#5a5a5a;font-family:'JetBrains Mono',monospace;font-size:12.5px;user-select:none">{{ ln.n }}</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:14px;color:{{ ln.color }};font-weight:{{ ln.weight }};font-style:{{ ln.fstyle }};padding-left:{{ ln.indent }}px;white-space:pre-wrap;word-break:break-word">{{ ln.text }}</span>
+          </div>
+        </sc-for>
+        <div style="height:40px"></div>
+      </div>
+
+      <!-- TERMINAL PANEL -->
+      <div style="height:210px;flex-shrink:0;background:#181818;border-top:1px solid #2d2d2d;display:flex;flex-direction:column">
+        <div style="display:flex;gap:22px;padding:9px 16px 0;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.5px;text-transform:uppercase;border-bottom:1px solid #2d2d2d">
+          <span style="color:#5a5a5a;padding-bottom:9px">Problems</span>
+          <span style="color:#5a5a5a;padding-bottom:9px">Output</span>
+          <span style="color:#e8e8e8;padding-bottom:9px;border-bottom:2px solid #4EC9B0">Terminal</span>
+          <span style="color:#5a5a5a;padding-bottom:9px">Ports</span>
+        </div>
+        <div style="flex:1;overflow-y:auto;padding:12px 16px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.9">
+          <sc-for list="{{ bootLines }}" as="bl" hint-placeholder-count="4">
+            <div style="color:#8a8a8a">{{ bl }}</div>
+          </sc-for>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:6px;margin-bottom:10px">
+            <span style="color:#4EC9B0">➜</span><span style="color:#569CD6">portfolio</span><span style="color:#d4d4d4">git:(</span><span style="color:#CE9178">main</span><span style="color:#d4d4d4">)</span>
+            <span style="width:7px;height:14px;background:#d4d4d4;display:inline-block;animation:blink 1.1s step-end infinite"></span>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <sc-for list="{{ quickCmds }}" as="c" hint-placeholder-count="8">
+              <span onClick="{{ c.onClick }}" style="font-size:11px;color:#9CDCFE;border:1px solid #2d2d2d;padding:4px 10px;border-radius:3px;cursor:pointer;background:#1e1e1e" style-hover="border-color:#4EC9B0;color:#4EC9B0">{{ c.label }}</span>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ STATUS BAR ═══ -->
+  <div style="height:24px;flex-shrink:0;background:#4EC9B0;display:flex;align-items:center;padding:0 12px;gap:16px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#0e1e1a;font-weight:600">
+    <span style="display:flex;align-items:center;gap:5px">⎇ main</span>
+    <span>✓ 0 problemas</span>
+    <span style="flex:1"></span>
+    <span>{{ activeLangMode }}</span>
+    <span>UTF-8</span>
+    <span>LF</span>
+    <div style="display:flex;align-items:center;gap:2px;background:rgba(0,0,0,.15);border-radius:10px;padding:2px">
+      <button onClick="{{ setLangPt }}" style="border:none;border-radius:9px;padding:1px 9px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;cursor:pointer;background:{{ ptBg }};color:{{ ptColor }}">PT</button>
+      <button onClick="{{ setLangEn }}" style="border:none;border-radius:9px;padding:1px 9px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;cursor:pointer;background:{{ enBg }};color:{{ enColor }}">EN</button>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    lang: (typeof localStorage !== 'undefined' && localStorage.getItem('nishikawa_lang')) || 'pt',
+    openTabs: ['README.md'],
+    activeTab: 'README.md',
+    sidebarOpen: true,
+    folderExpanded: true,
+    bootCount: 0,
+    hintDismissed: (typeof localStorage !== 'undefined' && localStorage.getItem('nishikawa_ide_hint_dismissed') === '1')
+  };
+
+  dismissHint() {
+    this.setState({ hintDismissed: true });
+    try { localStorage.setItem('nishikawa_ide_hint_dismissed', '1'); } catch (e) {}
+  }
+
+  componentDidMount() {
+    this.bootTimer = setInterval(() => {
+      this.setState(s => {
+        const next = s.bootCount + 1;
+        if (next >= 4) clearInterval(this.bootTimer);
+        return { bootCount: next };
+      });
+    }, 380);
+  }
+  componentWillUnmount() { clearInterval(this.bootTimer); }
+
+  openFile(id) {
+    this.setState(s => {
+      const openTabs = s.openTabs.includes(id) ? s.openTabs : [...s.openTabs, id];
+      return { openTabs, activeTab: id };
+    });
+  }
+  closeTab(id, e) {
+    if (e && e.stopPropagation) e.stopPropagation();
+    this.setState(s => {
+      const idx = s.openTabs.indexOf(id);
+      const openTabs = s.openTabs.filter(x => x !== id);
+      let activeTab = s.activeTab;
+      if (activeTab === id) {
+        if (openTabs.length === 0) { openTabs.push('README.md'); activeTab = 'README.md'; }
+        else activeTab = openTabs[Math.max(0, idx - 1)];
+      }
+      return { openTabs, activeTab };
+    });
+  }
+  toggleFolder() { this.setState(s => ({ folderExpanded: !s.folderExpanded })); }
+  toggleSidebar() { this.setState(s => ({ sidebarOpen: !s.sidebarOpen })); }
+  setLang(l) { this.setState({ lang: l }); try { localStorage.setItem('nishikawa_lang', l); } catch (e) {} }
+
+  renderVals() {
+    const pt = this.state.lang === 'pt';
+
+    const FILES = [
+      { id: 'README.md', label: 'README.md', icon: 'MD', iconColor: '#4FC3F7', langMode: 'Markdown',
+        caption: { pt: 'Introdução rápida', en: 'Quick introduction' },
+        desc: { pt: 'A porta de entrada — quem eu sou e o que eu faço, em três frases.', en: 'The front door — who I am and what I do, in three sentences.' } },
+      { id: 'sobre.md', label: 'sobre.md', icon: 'MD', iconColor: '#4FC3F7', langMode: 'Markdown',
+        caption: { pt: 'Minha trajetória', en: 'My background' },
+        desc: { pt: 'Sobre mim: de onde vim, o que aprendi no caminho e minha experiência em números.', en: 'About me: where I came from, what I learned along the way, and my experience in numbers.' } },
+      { id: 'conquistas.json', label: 'conquistas.json', icon: '{}', iconColor: '#DCC64B', langMode: 'JSON',
+        caption: { pt: 'Prêmios e hackathons', en: 'Awards & hackathons' },
+        desc: { pt: 'Conquistas: os hackathons que venci e os projetos que construí sob pressão.', en: 'Achievements: the hackathons I won and the projects I built under pressure.' } },
+      { id: 'package.json', label: 'package.json', icon: '{}', iconColor: '#DCC64B', langMode: 'JSON',
+        caption: { pt: 'Minhas habilidades', en: 'My skills' },
+        desc: { pt: 'Habilidades técnicas, listadas como "dependências" — quanto mais alto o número, mais domino aquilo.', en: 'Technical skills, listed as "dependencies" — the higher the number, the stronger I am at it.' } },
+      { id: 'github.sh', label: 'github.sh', icon: '$', iconColor: '#7FDB7F', langMode: 'Shell Script',
+        caption: { pt: 'Estatísticas do GitHub', en: 'GitHub stats' },
+        desc: { pt: 'Um resumo do meu GitHub — repositórios públicos, linguagens mais usadas e projetos em destaque.', en: 'A snapshot of my GitHub — public repos, most-used languages and featured projects.' } },
+      { id: 'projetos/docrag-br.py', label: 'docrag-br.py', icon: 'PY', iconColor: '#569CD6', langMode: 'Python', folder: true,
+        caption: { pt: 'Projeto: auditor de documentos', en: 'Project: document auditor' },
+        desc: { pt: 'DocRAG BR: um projeto de IA que lê documentos financeiros e confere se as contas realmente batem.', en: 'DocRAG BR: an AI project that reads financial documents and checks that the numbers actually add up.' } },
+      { id: 'projetos/petrova.py', label: 'petrova.py', icon: 'PY', iconColor: '#569CD6', langMode: 'Python', folder: true,
+        caption: { pt: 'Projeto: pesquisa com IA', en: 'Project: AI research' },
+        desc: { pt: 'Projeto Petrova: uma pesquisa sobre como deixar a IA muito mais precisa ao ler tabelas financeiras.', en: 'Project Petrova: research on making AI far more accurate when reading financial tables.' } },
+      { id: 'projetos/outros.md', label: 'outros.md', icon: 'MD', iconColor: '#4FC3F7', langMode: 'Markdown', folder: true,
+        caption: { pt: 'Outros projetos', en: 'Other projects' },
+        desc: { pt: 'Outros projetos que já construí — de automações no WhatsApp a ferramentas para redes.', en: "Other projects I've built — from WhatsApp automations to networking tools." } },
+      { id: 'experiencia.log', label: 'experiencia.log', icon: '≡', iconColor: '#9E9E9E', langMode: 'Log',
+        caption: { pt: 'Minha experiência de trabalho', en: 'My work experience' },
+        desc: { pt: 'Minha experiência profissional — os cargos que ocupei e o que fiz em cada um.', en: 'My work experience — the roles I held and what I actually did in each one.' } },
+      { id: 'contato.txt', label: 'contato.txt', icon: 'TXT', iconColor: '#D4D4D4', langMode: 'Plain Text',
+        caption: { pt: 'Fale comigo', en: 'Get in touch' },
+        desc: { pt: 'Como falar comigo — email, LinkedIn e GitHub.', en: 'How to reach me — email, LinkedIn and GitHub.' } }
+    ];
+    const byId = {}; FILES.forEach(f => byId[f.id] = f);
+
+    const fileRow = (f) => ({
+      icon: f.icon, iconColor: f.iconColor, label: f.label,
+      caption: pt ? f.caption.pt : f.caption.en,
+      bg: this.state.activeTab === f.id ? '#37373d' : 'transparent',
+      textColor: this.state.activeTab === f.id ? '#ffffff' : '#cccccc',
+      onClick: () => this.openFile(f.id)
+    });
+
+    const rootFiles = FILES.filter(f => !f.folder).slice(0, 5).map(fileRow);
+    const projectFiles = FILES.filter(f => f.folder).map(fileRow);
+    const tailFiles = FILES.filter(f => !f.folder).slice(5).map(fileRow);
+
+    const tabs = this.state.openTabs.map(id => {
+      const f = byId[id];
+      const active = this.state.activeTab === id;
+      return {
+        icon: f.icon, iconColor: f.iconColor, label: f.label,
+        bg: active ? '#1e1e1e' : '#181818',
+        topBorder: active ? '#4EC9B0' : 'transparent',
+        textColor: active ? '#ffffff' : '#9a9a9a',
+        onClick: () => this.setState({ activeTab: id }),
+        onClose: (e) => this.closeTab(id, e)
+      };
+    });
+
+    // ── content data ──
+    const MILESTONES = [
+      { badge: 'RAISE Summit \'26', title: { pt: 'DocRAG BR — o RAG que se audita', en: 'DocRAG BR — the RAG that audits itself' },
+        sub: { pt: 'Build solo em 48h', en: 'Solo build in 48h' },
+        desc: { pt: 'Auditor autônomo para documentos financeiros brasileiros — cruza a narrativa com o que tabelas e gráficos realmente mostram.', en: 'Autonomous auditor for Brazilian financial documents — cross-checks the narrative against what tables and charts actually show.' },
+        tags: ['RAG', 'Vision LLM', 'ChromaDB'] },
+      { badge: 'Google Cloud / GKE', title: { pt: 'Agente de IA para Online Boutique', en: 'AI Agent for Online Boutique' },
+        sub: { pt: 'Microsserviço de IA', en: 'AI microservice' },
+        desc: { pt: 'Microsserviço plugado ao Online Boutique do Google — gera ofertas personalizadas a partir de comportamento do usuário.', en: "Microservice plugged into Google's Online Boutique — generates personalized offers from user behavior." },
+        tags: ['Gemini', 'FastAPI', 'K8s'] }
+    ];
+
+    const SKILLS_RAW = [
+      { cat: 'IA & LLMs', items: [['llms', 92], ['rag', 94], ['agentes-de-ia', 90], ['sistemas-multiagente', 82], ['engenharia-de-prompt', 92], ['langchain', 84], ['mcp', 80], ['bancos-vetoriais', 86]] },
+      { cat: 'Automação', items: [['rpa', 96], ['web-scraping', 94], ['ocr', 86], ['n8n', 90], ['automacao-de-processos', 95]] },
+      { cat: 'Linguagens', items: [['python', 96], ['typescript', 78], ['javascript', 82], ['sql', 88]] },
+      { cat: 'Web & Backend', items: [['react', 76], ['node', 78], ['rest-apis', 92], ['fastapi-flask', 88]] },
+      { cat: 'Dados & Infra', items: [['docker', 86], ['cloud-gcp-k8s', 76], ['postgresql-mysql', 88], ['git', 90], ['linux', 88]] }
+    ];
+
+    const PROJECTS_OUTROS = [
+      { title: 'Online Boutique AI Agent', desc: { pt: 'Microsserviço de agente de IA que recupera carrinhos abandonados com ofertas geradas por Gemini.', en: 'AI agent microservice that recovers abandoned carts with Gemini-generated offers.' }, tags: 'Gemini, FastAPI, K8s' },
+      { title: 'NetRouter AI', desc: { pt: 'Copiloto de IA para engenheiros de rede — diagnostica e gera configs para Cisco, Nokia, FortiGate.', en: 'AI copilot for network engineers — diagnoses and generates configs for Cisco, Nokia, FortiGate.' }, tags: 'Gemini, Flask' },
+      { title: 'WaSender Pro', desc: { pt: 'Automação de campanhas no WhatsApp com agendamento e monitoramento em tempo real.', en: 'WhatsApp campaign automation with scheduling and real-time monitoring.' }, tags: 'Python, PyQt6' },
+      { title: 'NetLog Insight', desc: { pt: 'Inteligência de logs Cisco/FortiGate/Nokia — reduz tempo de diagnóstico em campo.', en: 'Cisco/FortiGate/Nokia log intelligence — cuts field diagnosis time.' }, tags: 'Python, Parsing' },
+      { title: 'Network Sentinel', desc: { pt: 'Scanner de rede e portas com GUI dark mode.', en: 'Network & port scanner with a dark-mode GUI.' }, tags: 'Python, Security' },
+      { title: pt ? 'Calculadora de Sub-redes' : 'Subnet Calculator', desc: { pt: 'Calculadora IPv4 desktop para estudo de CCNA e campo.', en: 'Desktop IPv4 calculator for CCNA study and fieldwork.' }, tags: 'Python, IPv4' }
+    ];
+
+    const EXPERIENCE = [
+      { period: pt ? '2026-02 — atual' : '2026-02 — present', role: { pt: 'Analista de Sistemas RPA', en: 'RPA Systems Analyst' }, co: 'Mix Fiscal · Campinas, BR',
+        bullets: { pt: ['RPA de classificação fiscal, 98% de precisão, revisão manual eliminada', 'Camada de observabilidade: logs estruturados ponta a ponta', 'Stack completa: bots Python, PostgreSQL, REST — time Scrum'],
+                   en: ['Tax-classification RPA, 98% precision, manual review eliminated', 'Observability layer: end-to-end structured logs', 'Full stack: Python bots, PostgreSQL, REST — Scrum team'] },
+        tags: 'Python, RPA, PostgreSQL' },
+      { period: '2025-04 — 2026-02', role: { pt: 'Analista de Desenvolvimento', en: 'Development Analyst' }, co: 'Global Hitss · Campinas, BR',
+        bullets: { pt: ['4 ferramentas internas de automação de dados e relatórios', 'Análise de logs Cisco/Nokia — menos tempo de diagnóstico', 'Chatbot técnico no Telegram via n8n', 'Portal de conhecimento com OCR'],
+                   en: ['4 internal tools for data ops and reporting', 'Cisco/Nokia log analysis — cut diagnosis time', 'Technical Telegram chatbot via n8n', 'Knowledge portal with OCR search'] },
+        tags: 'Python, n8n, OCR' },
+      { period: '2024-08 — 2025-07', role: { pt: 'Técnico de Redes', en: 'Network Technician' }, co: 'Global Hitss · Campinas, BR',
+        bullets: { pt: ['Suporte e incidentes em redes corporativas'], en: ['Enterprise network support & incident resolution'] }, tags: 'Redes, Linux' }
+    ];
+
+    // ── line builders ──
+    const L = (color, weight, fstyle, indent) => (text) => ({ color, weight: weight || '400', fstyle: fstyle || 'normal', indent: indent || 0, text });
+    const heading = L('#4EC9B0', '700', 'normal', 0);
+    const sub = L('#4EC9B0', '600', 'normal', 0);
+    const comment = L('#6A9955', '400', 'italic', 0);
+    const plain = L('#D4D4D4', '400', 'normal', 0);
+    const key = L('#9CDCFE', '600', 'normal', 0);
+    const str = L('#CE9178', '400', 'normal', 12);
+    const kw = L('#569CD6', '600', 'normal', 0);
+    const num = L('#B5CEA8', '400', 'normal', 12);
+    const dim = L('#808080', '400', 'normal', 0);
+
+    function numbered(items) { return items.map((mk, i) => ({ n: i + 1, ...mk })); }
+
+    let lines = [];
+    const active = this.state.activeTab;
+
+    if (active === 'README.md') {
+      lines = numbered([
+        heading('# Ryan Nishikawa'),
+        plain(''),
+        comment(pt ? '// Engenheiro de IA · Dev Full-Stack · Automação' : '// AI Engineer · Full-Stack Dev · Automation'),
+        plain(''),
+        plain(pt ? 'Construo sistemas de IA que leem, raciocinam e agem — pipelines de' : 'I build AI systems that read, reason and act — RAG pipelines,'),
+        plain(pt ? 'RAG, agentes autônomos e automação que elimina trabalho repetitivo,' : 'autonomous agents and automation that eliminates repetitive work,'),
+        plain(pt ? 'de ponta a ponta, em produção.' : 'end to end, in production.'),
+        plain(''),
+        (() => { const l = key(pt ? 'STATUS  ' : 'STATUS  '); return l; })(pt ? 'STATUS  ' : 'STATUS  '),
+        str(pt ? 'Campinas, BR · Aberto a trabalho remoto' : 'Campinas, BR · Open to remote work'),
+        plain(''),
+        comment(pt ? '// abra os arquivos ao lado para explorar ↖' : '// open the files on the left to explore ↖')
+      ]);
+      // fix status line (single line combining label+value)
+      lines[8] = { n: 9, color: '#9CDCFE', weight: '600', fstyle: 'normal', indent: 0, text: (pt ? 'STATUS   ' : 'STATUS   ') };
+      lines.splice(9, 1);
+      lines[8].text = (pt ? 'STATUS   Campinas, BR · Aberto a trabalho remoto' : 'STATUS   Campinas, BR · Open to remote work');
+      lines = lines.map((l, i) => ({ ...l, n: i + 1 }));
+    }
+
+    else if (active === 'sobre.md') {
+      lines = numbered([
+        heading(pt ? '# De cabos de rede a redes neurais.' : '# From network cables to neural networks.'),
+        plain(''),
+        plain(pt ? 'Comecei em infraestrutura de redes corporativas, migrei para engenharia' : 'I started in enterprise network infrastructure, moved into backend'),
+        plain(pt ? 'backend e RPA e hoje projeto sistemas de IA — pipelines de RAG, agentes' : '& RPA engineering, and today I design AI systems — RAG pipelines,'),
+        plain(pt ? 'de LLM e automação que roda sem supervisão em produção.' : 'LLM agents and automation that runs unattended in production.'),
+        plain(''),
+        plain(pt ? 'Esse caminho — do cabo ao modelo — é o motivo de meus sistemas' : 'That path — from the wire to the model — is why my systems'),
+        plain(pt ? 'sobreviverem ao mundo real: penso em modos de falha, observabilidade' : 'survive contact with the real world: I think about failure modes,'),
+        plain(pt ? 'e escala antes da primeira linha de código.' : 'observability and scale before the first line of code.'),
+        plain(''),
+        key(pt ? 'TRILHA   ' : 'PATH     '),
+        plain(''),
+        sub(pt ? '## Métricas' : '## Metrics'),
+        str(pt ? '- 3+ anos entregando software e automação' : '- 3+ years shipping software & automation'),
+        str(pt ? '- 13 repositórios públicos no GitHub' : '- 13 public repositories on GitHub'),
+        str(pt ? '- 2 hackathons internacionais — RAISE e Google' : '- 2 international hackathons — RAISE & Google'),
+        str(pt ? '- 98% de taxa de sucesso em RPAs de produção' : '- 98% success rate on production RPAs')
+      ]);
+      lines[10].text = (pt ? 'TRILHA   Redes → Automação & RPA → Engenharia de IA' : 'PATH     Networks → Automation & RPA → AI Engineering');
+    }
+
+    else if (active === 'conquistas.json') {
+      lines.push(dim('{'));
+      let n = 2;
+      MILESTONES.forEach((m, i) => {
+        lines.push({ ...key('  "' + m.badge + '": {'), });
+        lines.push(key('    "titulo": ')); lines[lines.length - 1].text = '    "titulo": "' + (pt ? m.title.pt : m.title.en) + '",';
+        lines.push(key('    "contexto": ')); lines[lines.length - 1].text = '    "contexto": "' + (pt ? m.sub.pt : m.sub.en) + '",';
+        lines.push(str('    "resumo": "' + (pt ? m.desc.pt : m.desc.en) + '",'));
+        lines.push(str('    "tags": [' + m.tags.map(t => '"' + t + '"').join(', ') + ']'));
+        lines.push(dim(i === MILESTONES.length - 1 ? '  }' : '  },'));
+      });
+      lines.push(dim('}'));
+      lines = lines.map((l, i) => ({ ...l, n: i + 1 }));
+    }
+
+    else if (active === 'package.json') {
+      lines.push(dim('{'));
+      lines.push(key('  "name": ')); lines[lines.length - 1].text = '  "name": "ryan-nishikawa",';
+      lines.push(key('  "dependencies": {'));
+      SKILLS_RAW.forEach((grp, gi) => {
+        lines.push(comment('    // ' + grp.cat));
+        grp.items.forEach(([nameId, pct], ii) => {
+          const last = gi === SKILLS_RAW.length - 1 && ii === grp.items.length - 1;
+          lines.push(num('    "' + nameId + '": "^' + pct.toFixed(1) + '.0"' + (last ? '' : ',')));
+        });
+      });
+      lines.push(dim('  }'));
+      lines.push(dim('}'));
+      lines = lines.map((l, i) => ({ ...l, n: i + 1 }));
+    }
+
+    else if (active === 'github.sh') {
+      lines = numbered([
+        comment(pt ? '#!/bin/bash — estatísticas públicas' : '#!/bin/bash — public stats'),
+        plain(''),
+        kw('echo'), plain(''),
+      ]);
+      lines = [];
+      const push = (o) => lines.push(o);
+      push(comment(pt ? '#!/bin/bash — estatísticas públicas' : '#!/bin/bash — public stats'));
+      push(plain(''));
+      push({ ...kw('echo'), text: 'echo "repositórios públicos: 13"' });
+      push({ ...kw('echo'), text: pt ? 'echo "anos no github: 4+"' : 'echo "years on github: 4+"' });
+      push({ ...kw('echo'), text: pt ? 'echo "projetos de ia e automação: 8"' : 'echo "ai & automation projects: 8"' });
+      push({ ...kw('echo'), text: pt ? 'echo "seguidores: 3"' : 'echo "followers: 3"' });
+      push(plain(''));
+      push(comment(pt ? '# distribuição de linguagens' : '# language distribution'));
+      push(str('python        ' + '█████████████████░░░ 72%'));
+      push(str('typescript/js ' + '███░░░░░░░░░░░░░░░░░ 14%'));
+      push(str('html/css      ' + '██░░░░░░░░░░░░░░░░░░  9%'));
+      push(plain(''));
+      push(comment(pt ? '# repositórios em destaque' : '# featured repositories'));
+      push({ ...key('DocRAG-BR'), text: 'DocRAG-BR          ' + (pt ? '· RAG que se auto-audita' : '· self-auditing RAG') });
+      push({ ...key('Projeto-Petrova'), text: 'Projeto-Petrova    ' + (pt ? '· pesquisa de chunking · +85,7pp' : '· chunking research · +85.7pp') });
+      push({ ...key('NetrouterAI'), text: 'NetrouterAI        ' + (pt ? '· copiloto de ia para redes' : '· ai copilot for networks') });
+      push(plain(''));
+      push({ ...kw('open'), text: '→ github.com/Nishuw' });
+      lines = lines.map((l, i) => ({ ...l, n: i + 1 }));
+    }
+
+    else if (active === 'projetos/docrag-br.py') {
+      lines = [];
+      lines.push(comment('# docrag-br.py'));
+      lines.push(str('"""'));
+      lines.push(str('DocRAG BR — ' + (pt ? 'o RAG que se audita' : 'the RAG that audits itself')));
+      lines.push(dim('Hackathon · RAISE Summit \'26 · ' + (pt ? 'build solo em 48h' : 'solo build in 48h')));
+      lines.push(str('"""'));
+      lines.push(plain(''));
+      lines.push(plain(pt ? '# Todos construíram "chat com PDF". Inverti o fluxo: um auditor' : '# Everyone built "chat with your PDF". I inverted the flow: an'));
+      lines.push(plain(pt ? '# autônomo que cruza a narrativa com o que tabelas e gráficos mostram.' : '# autonomous auditor cross-checking narrative against tables & charts.'));
+      lines.push(plain(''));
+      lines.push({ ...key('tags'), text: 'tags = ["Python", "RAG", "ChromaDB", "Vision LLM", "OpenRouter"]' });
+      lines.push({ ...key('repo'), text: 'repo = "github.com/Nishuw/DocRAG-BR"' });
+      lines.push(plain(''));
+      lines.push(kw('def pipeline():'));
+      lines.push({ ...plain('    ingest()'), indent: 12, text: '    ingest()        ' + (pt ? '# texto · tabelas · gráficos vetoriais' : '# text · tables · vector charts') });
+      lines.push({ ...plain(''), indent: 12, text: '    embed_index()   ' + (pt ? '# ChromaDB local, multilíngue' : '# ChromaDB, local, multilingual') });
+      lines.push({ ...plain(''), indent: 12, text: '    retrieve()      ' + (pt ? '# roteamento + rerank, 2 estágios' : '# intent routing + rerank, 2-stage') });
+      lines.push({ ...plain(''), indent: 12, text: '    audit()         ' + (pt ? '# 0 alucinações · cada nº verificado' : '# 0 hallucinations · every number checked') });
+      lines = lines.map((l, i) => ({ ...l, n: i + 1 }));
+    }
+
+    else if (active === 'projetos/petrova.py') {
+      lines = [];
+      lines.push(comment('# petrova.py'));
+      lines.push(str('"""'));
+      lines.push(str('Projeto Petrova — ' + (pt ? 'pesquisa de chunking para RAG' : 'RAG chunking research')));
+      lines.push(dim(pt ? 'Pesquisa · tabelas financeiras CVM/B3' : 'Research · CVM/B3 financial tables'));
+      lines.push(str('"""'));
+      lines.push(plain(''));
+      lines.push(plain(pt ? '# Tese: reformular cada linha da tabela em um chunk autossuficiente' : '# Thesis: reformulating each table row into a self-contained chunk'));
+      lines.push(plain(pt ? '# elimina o colapso de precisão do chunking genérico.' : '# eliminates the precision collapse of generic chunking.'));
+      lines.push(plain(''));
+      lines.push(comment(pt ? '# acurácia sob recuperação parcial' : '# accuracy under partial retrieval'));
+      lines.push({ ...num('vale'), text: 'vale_1t26        0%    → 85.7%' });
+      lines.push({ ...num('itau'), text: 'itau_4t25        0%    → 71.4%' });
+      lines.push({ ...num('itau_noisy'), text: 'itau_4t25_noisy  14.3% → 100%' });
+      lines.push(plain(''));
+      lines.push({ ...key('result'), text: 'result = "+85.7pp ' + (pt ? 'de acurácia por apenas +15–26% de tokens' : 'accuracy for only +15–26% tokens') + '"' });
+      lines.push({ ...key('judge'), text: 'judge = "Llama-3.3-70b"' });
+      lines = lines.map((l, i) => ({ ...l, n: i + 1 }));
+    }
+
+    else if (active === 'projetos/outros.md') {
+      lines = [];
+      lines.push(heading(pt ? '# Outros projetos' : '# Other projects'));
+      lines.push(plain(''));
+      PROJECTS_OUTROS.forEach(p => {
+        lines.push(sub('### ' + p.title));
+        lines.push(plain(pt ? p.desc.pt : p.desc.en));
+        lines.push(comment('tags: ' + p.tags));
+        lines.push(plain(''));
+      });
+      lines = lines.map((l, i) => ({ ...l, n: i + 1 }));
+    }
+
+    else if (active === 'experiencia.log') {
+      lines = [];
+      EXPERIENCE.forEach(x => {
+        lines.push({ ...num('[' + x.period + ']'), text: '[' + x.period + '] ' + (pt ? x.role.pt : x.role.en) });
+        lines.push(dim('  ' + x.co));
+        (pt ? x.bullets.pt : x.bullets.en).forEach(b => lines.push({ ...plain('  > ' + b), indent: 12, text: '> ' + b }));
+        lines.push(comment('  tags: ' + x.tags));
+        lines.push(plain(''));
+      });
+      lines = lines.map((l, i) => ({ ...l, n: i + 1 }));
+    }
+
+    else if (active === 'contato.txt') {
+      lines = numbered([
+        { ...key('EMAIL     '), text: 'EMAIL      ryan.nishikawa@hotmail.com' },
+        { ...key('LINKEDIN  '), text: 'LINKEDIN   in/ryan-nishikawa' },
+        { ...key('GITHUB    '), text: 'GITHUB     github.com/Nishuw' },
+        plain(''),
+        { ...str('STATUS'), text: 'STATUS     ' + (pt ? 'Disponível para oportunidades remotas · Campinas, BR' : 'Available for remote opportunities · Campinas, BR') },
+        plain(''),
+        comment(pt ? '// um agente de IA, um pipeline de RAG, uma automação que nunca' : '// an AI agent, a RAG pipeline, an automation that never'),
+        comment(pt ? '// dorme — ou uma vaga onde eu possa entregar os três.' : '// sleeps — or a role where I can ship all three.')
+      ]);
+    }
+
+    const quickCmds = [
+      { label: 'code README.md', onClick: () => this.openFile('README.md') },
+      { label: 'code sobre.md', onClick: () => this.openFile('sobre.md') },
+      { label: 'cat conquistas.json', onClick: () => this.openFile('conquistas.json') },
+      { label: 'npm ls', onClick: () => this.openFile('package.json') },
+      { label: 'bash github.sh', onClick: () => this.openFile('github.sh') },
+      { label: 'ls projetos/', onClick: () => { this.setState({ folderExpanded: true }); this.openFile('projetos/outros.md'); } },
+      { label: 'tail experiencia.log', onClick: () => this.openFile('experiencia.log') },
+      { label: 'cat contato.txt', onClick: () => this.openFile('contato.txt') }
+    ];
+
+    const bootAll = [
+      pt ? '$ npm run boot' : '$ npm run boot',
+      pt ? '✓ workspace carregado — 10 arquivos' : '✓ workspace loaded — 10 files',
+      pt ? '✓ agente pronto — 0 erros' : '✓ agent ready — 0 errors'
+    ];
+    const bootLines = bootAll.slice(0, this.state.bootCount);
+
+    return {
+      sidebarOpen: this.state.sidebarOpen,
+      sidebarOpen_: this.state.sidebarOpen ? '#4EC9B0' : 'transparent',
+      sidebarIconColor: this.state.sidebarOpen ? '#ffffff' : '#8a8a8a',
+      breadcrumbDesc: (byId[active] || {}).desc ? (pt ? byId[active].desc.pt : byId[active].desc.en) : '',
+      showHint: !this.state.hintDismissed,
+      hintText: pt
+        ? 'Este portfólio funciona como um editor de código. Clique nos arquivos à esquerda para explorar cada parte da minha história — cada um tem uma explicação simples aqui em cima.'
+        : "This portfolio works like a code editor. Click the files on the left to explore each part of my story — each one has a plain-language explanation up here.",
+      dismissHint: () => this.dismissHint(),
+      rootFiles, projectFiles, tailFiles,
+      folderExpanded: this.state.folderExpanded,
+      folderArrow: this.state.folderExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+      toggleFolder: () => this.toggleFolder(),
+      toggleSidebar: () => this.toggleSidebar(),
+      tabs,
+      activeLines: lines,
+      activeLangMode: (byId[active] || {}).langMode || 'Plain Text',
+      quickCmds,
+      bootLines,
+      ptBg: pt ? 'rgba(0,0,0,.28)' : 'transparent', ptColor: pt ? '#ffffff' : '#0e1e1a',
+      enBg: !pt ? 'rgba(0,0,0,.28)' : 'transparent', enColor: !pt ? '#ffffff' : '#0e1e1a',
+      setLangPt: () => this.setLang('pt'),
+      setLangEn: () => this.setLang('en')
+    };
+  }
+}
+
+</script>
+</body>
+</html>
