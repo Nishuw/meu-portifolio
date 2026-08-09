@@ -8,7 +8,7 @@ interface SEOOptions {
   url?: string;
 }
 
-const DEFAULT_TITLE = "Ryan Nishikawa — Desenvolvedor Python & IA";
+const DEFAULT_TITLE = "Ryan Nishikawa | Desenvolvedor Python & IA";
 
 const setMetaTag = (attr: "name" | "property", key: string, content?: string) => {
   if (!content) return;

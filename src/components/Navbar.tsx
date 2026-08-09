@@ -69,7 +69,7 @@ const Navbar = ({ selectedCategory, onCategoryChange }: NavbarProps) => {
                         : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
-                    {category}
+                    {category === "everything" ? "tudo" : category}
                   </button>
                 ))}
               </div>
@@ -102,7 +102,7 @@ const Navbar = ({ selectedCategory, onCategoryChange }: NavbarProps) => {
                       : "bg-muted text-muted-foreground"
                   }`}
                 >
-                  {category}
+                  {category === "everything" ? "tudo" : category}
                 </button>
               ))}
             </div>

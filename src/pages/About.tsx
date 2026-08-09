@@ -11,9 +11,9 @@ const About = () => {
   const location = useLocation();
 
   useSEO({
-    title: "Sobre — Ryan Nishikawa",
+    title: "Sobre | Ryan Nishikawa",
     description:
-      "Ryan Nishikawa é desenvolvedor de software focado em Python, automação e IA — agentes com LLMs, sistemas RAG, APIs e integrações. Conheça a trajetória, stack e formação.",
+      "Ryan Nishikawa é desenvolvedor de software focado em Python, automação e IA: agentes com LLMs, sistemas RAG, APIs e integrações. Conheça a trajetória, stack e formação.",
     type: "profile",
   });
 
@@ -31,21 +31,26 @@ const About = () => {
   }, [location]);
 
   const skills = [
-    "Python · Flask",
+    "Python · Flask · Java",
     "RPA & Web Scraping",
     "LLMs · RAG · MCP",
     "APIs REST & Microsserviços",
     "Docker · Kubernetes",
     "SQL · NoSQL",
-    "CI/CD · DevOps · IaC",
+    "Git · CI/CD · DevOps · IaC",
+    "Clean Arch · DDD · TDD",
     "AWS · GCP · Azure",
   ];
 
   const education = [
-    { award: "Redes de Computadores — Cruzeiro do Sul", year: "cursando" },
-    { award: "Back-end Python — EBAC", year: "concluído" },
-    { award: "Python com Flask — Rocketseat", year: "concluído" },
-    { award: "Scrum — Global Hitss", year: "concluído" },
+    { award: "Redes de Computadores · Cruzeiro do Sul", year: "cursando" },
+    { award: "Back-end Python · EBAC", year: "concluído" },
+    { award: "Python com Flask · Rocketseat", year: "concluído" },
+    { award: "Gemini do zero ao avançado · Descomplica", year: "concluído" },
+    { award: "Scripting e Automação · Udemy", year: "concluído" },
+    { award: "Banco de dados MySQL · Udemy", year: "concluído" },
+    { award: "Técnico em Informática · Dell", year: "concluído" },
+    { award: "Scrum · Global Hitss", year: "concluído" },
   ];
 
   const socialLinks = [
@@ -63,7 +68,7 @@ const About = () => {
         <section className="min-h-[60vh] max-h-[70vh] flex flex-col justify-center px-6 pt-24 pb-8">
           <div className="max-w-[95%]">
             <ScrollRevealText
-              text="Ryan Nishikawa é desenvolvedor de software focado em Python, automação e Inteligência Artificial — agentes com LLMs, sistemas RAG, APIs e integrações que transformam processos manuais em fluxos escaláveis."
+              text="Ryan Nishikawa transforma processos manuais em sistemas que rodam sozinhos: robôs de RPA em produção, agentes com LLMs, sistemas RAG e integrações que conectam a IA aos sistemas reais das empresas."
               className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-[1.1] font-serif"
             />
           </div>
@@ -76,7 +81,7 @@ const About = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 fade-in-up">
             {/* Skills */}
             <div>
-              <h3 className="text-xs uppercase tracking-widest text-muted-foreground mb-4 border-b border-border pb-2">
+              <h3 className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground mb-4 border-b border-border pb-2">
                 Stack
               </h3>
               <ul className="space-y-1">
@@ -90,7 +95,7 @@ const About = () => {
 
             {/* Education */}
             <div>
-              <h3 className="text-xs uppercase tracking-widest text-muted-foreground mb-4 border-b border-border pb-2">
+              <h3 className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground mb-4 border-b border-border pb-2">
                 Formação
               </h3>
               <ul className="space-y-1">
@@ -105,7 +110,7 @@ const About = () => {
 
             {/* Contact */}
             <div>
-              <h3 className="text-xs uppercase tracking-widest text-muted-foreground mb-4 border-b border-border pb-2">
+              <h3 className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground mb-4 border-b border-border pb-2">
                 Contato
               </h3>
               <div className="space-y-2">

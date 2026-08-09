@@ -11,9 +11,9 @@ export const experiences: ExperienceItem[] = [
   {
     role: "Analista de Desenvolvimento de RPAs",
     company: "Mix Fiscal",
-    period: "2026 — atual",
+    period: "desde 2026",
     summary:
-      "Automação de processos fiscais de ponta a ponta com Python, containers e boas práticas de engenharia.",
+      "Robôs em Python que executam rotinas fiscais de ponta a ponta, em containers, com rastro completo de cada execução.",
     achievements: [
       "Robôs de RPA com integração a APIs, manipulação de dados e web scraping de informações críticas",
       "Modelagem e otimização de processos operacionais, reduzindo tarefas manuais e aumentando a confiabilidade",
@@ -24,9 +24,9 @@ export const experiences: ExperienceItem[] = [
   {
     role: "Desenvolvedor Backend & Analista de Redes",
     company: "Global Hitss",
-    period: "2024 — 2026",
+    period: "2024 a 2026",
     summary:
-      "Projetos de Inteligência Artificial e automação corporativa, incluindo a Clarinha, assistente virtual da Claro.",
+      "IA aplicada em escala corporativa: integrações da Clarinha, assistente virtual da Claro, e sistemas RAG sobre bases internas.",
     achievements: [
       "Participação no desenvolvimento da Clarinha, criando integrações e automações corporativas",
       "Sistemas RAG e agentes baseados em LLMs aplicados a bases documentais internas",
@@ -37,9 +37,9 @@ export const experiences: ExperienceItem[] = [
   {
     role: "Analista de Suporte Técnico & Dev Backend",
     company: "Multi360 · Supernova Telecom",
-    period: "2022 — 2024",
+    period: "2022 a 2024",
     summary:
-      "Análise de dados de telecom e automações que reduziram esforço operacional e apoiaram decisões.",
+      "Milhões de registros de chamadas transformados em relatórios de decisão, com a rede monitorada de ponta a ponta.",
     achievements: [
       "Soluções em Python para análise de CDR e otimização de processos corporativos",
       "Agentes de IA e automações RPA para reduzir esforço manual e aumentar produtividade",
@@ -50,9 +50,9 @@ export const experiences: ExperienceItem[] = [
   {
     role: "Desenvolvedor Backend & Analista de Redes",
     company: "Solution Ports",
-    period: "2021 — 2022",
+    period: "2021 a 2022",
     summary:
-      "Sistema de OCR em Java para gestão de operações portuárias e processamento inteligente de documentos.",
+      "OCR em Java lendo documentos portuários e transformando papel em dado estruturado, com menos retrabalho de conferência.",
     achievements: [
       "Desenvolvimento, manutenção e evolução do sistema OCR de operações portuárias",
       "Processamento inteligente de documentos com ganho de precisão e confiabilidade",
@@ -66,11 +66,11 @@ const ExperienceTimeline = () => {
   return (
     <section id="experience" className="px-6 py-20 border-t border-border">
       <div className="mb-12">
-        <p className="text-xs uppercase tracking-widest text-muted-foreground mb-4">
+        <p className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground mb-4">
           Trajetória
         </p>
         <h2 className="font-serif text-headline max-w-3xl">
-          Cinco anos construindo automações, integrações e sistemas de IA.
+          Do OCR em Java aos agentes de IA: cinco anos automatizando o que era manual.
         </h2>
       </div>
 
@@ -85,7 +85,7 @@ const ExperienceTimeline = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               <div className="lg:col-span-3">
-                <p className="text-xs uppercase tracking-widest text-muted-foreground">
+                <p className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground">
                   {item.period}
                 </p>
                 <p className="text-sm mt-1">{item.company}</p>

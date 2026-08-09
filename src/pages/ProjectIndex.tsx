@@ -14,10 +14,10 @@ const ProjectIndex = () => {
   const [activeId, setActiveId] = useState<string | null>(null);
 
   useSEO({
-    title: "Ryan Nishikawa — Desenvolvedor Python & IA",
+    title: "Ryan Nishikawa | Desenvolvedor Python & IA",
     description:
-      "Portfólio de Ryan Nishikawa: projetos de automação, RPA, agentes LLM, sistemas RAG, APIs e integrações corporativas.",
-    image: projects[0]?.images[0],
+      "Portfólio de Ryan Nishikawa: automação, RPA, agentes LLM, sistemas RAG e integrações corporativas, além de produtos de IA construídos nos hackathons RAISE Summit e Google Cloud.",
+    image: projects[0]?.image,
     type: "website",
   });
 
@@ -99,7 +99,7 @@ const ProjectIndex = () => {
                   }`}
                 >
                   <img
-                    src={project.images[0]}
+                    src={project.image}
                     alt={project.title}
                     className="w-full h-full object-cover"
                     loading="lazy"
@@ -142,7 +142,7 @@ const ProjectIndex = () => {
                   }`}
                 >
                   <img
-                    src={project.images[0]}
+                    src={project.image}
                     alt={project.title}
                     className="w-full h-auto object-cover"
                     loading="lazy"

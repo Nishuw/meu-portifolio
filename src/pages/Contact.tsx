@@ -36,7 +36,7 @@ const Contact = () => {
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
 
   useSEO({
-    title: "Contato — Ryan Nishikawa",
+    title: "Contato | Ryan Nishikawa",
     description:
       "Fale com Ryan Nishikawa sobre projetos de automação, IA, RPA e integrações. Envie uma mensagem pelo formulário.",
     type: "profile",
@@ -53,7 +53,7 @@ const Contact = () => {
   });
 
   const sendViaMailto = (data: ContactFormValues) => {
-    const subject = data.subject?.trim() || `Contato pelo portfólio — ${data.name}`;
+    const subject = data.subject?.trim() || `Contato pelo portfólio: ${data.name}`;
     const body = `Nome: ${data.name}\nE-mail: ${data.email}\n\n${data.message}`;
     window.location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
@@ -85,7 +85,7 @@ const Contact = () => {
           access_key: WEB3FORMS_KEY,
           name: data.name,
           email: data.email,
-          subject: data.subject?.trim() || `Contato pelo portfólio — ${data.name}`,
+          subject: data.subject?.trim() || `Contato pelo portfólio: ${data.name}`,
           message: data.message,
           from_name: "Portfólio Ryan Nishikawa",
         }),
@@ -113,7 +113,7 @@ const Contact = () => {
 
         <section className="px-6 pt-28 md:pt-32 pb-32">
           <div className="max-w-5xl mx-auto">
-            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-4 fade-in-up">
+            <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-muted-foreground mb-4 fade-in-up">
               Contato
             </p>
             <h1 className="text-display font-serif max-w-3xl fade-in-up fade-in-up-delay-1">
@@ -223,7 +223,7 @@ const Contact = () => {
               <div className="lg:col-span-5 fade-in-up fade-in-up-delay-3">
                 <div className="space-y-8 lg:pl-8 lg:border-l border-border">
                   <div>
-                    <h2 className="text-xs uppercase tracking-widest text-muted-foreground mb-4 border-b border-border pb-2">
+                    <h2 className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground mb-4 border-b border-border pb-2">
                       Direto
                     </h2>
                     <div className="space-y-3">
@@ -249,7 +249,7 @@ const Contact = () => {
                   </div>
 
                   <div>
-                    <h2 className="text-xs uppercase tracking-widest text-muted-foreground mb-4 border-b border-border pb-2">
+                    <h2 className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground mb-4 border-b border-border pb-2">
                       Redes
                     </h2>
                     <div className="flex gap-2">
